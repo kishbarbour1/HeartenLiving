@@ -42,7 +42,7 @@ export const services = [
     blurb: "Practical, everyday skills for confident independent living.",
     points: [
       "Budgeting",
-      "Meal preparation",
+      "Self-Advocacy",
       "Time management",
       "Communication",
       "Conflict resolution",
