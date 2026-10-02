@@ -11,13 +11,22 @@ const iconMap = { Home: HomeIcon, BookOpen, Briefcase, HeartHandshake };
 export default function Services() {
   return (
     <div>
-      <section className="relative overflow-hidden">
+      <section className="relative overflow-hidden bg-cream">
         <img
           src="https://media.base44.com/images/public/6abfa35db56b53d292ae7928/279983be7_WarmModernLivingRoomRetreat.png"
           alt=""
           className="absolute inset-0 h-full w-full object-cover"
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-cream/[0.95] via-cream/[0.85] to-cream/[0.75]" aria-hidden="true" />
+        <div className="absolute inset-0 bg-cream/70" aria-hidden="true" />
+        <div
+          className="absolute inset-0"
+          aria-hidden="true"
+          style={{
+            background:
+              "radial-gradient(ellipse 64% 78% at 50% 50%, rgba(251,246,236,0.62) 0%, rgba(251,246,236,0.44) 58%, rgba(251,246,236,0) 100%)",
+          }}
+        />
+        <div className="absolute inset-x-0 bottom-0 h-16 bg-gradient-to-b from-transparent to-cream" aria-hidden="true" />
         <div className="relative max-w-7xl mx-auto px-5 sm:px-8 py-20 md:py-28 text-center">
           <p className="font-script text-3xl text-gold-dark animate-fade-up">Our Services &amp; Support</p>
           <h1 className="animate-fade-up delay-100 mt-1 font-slab font-900 text-4xl sm:text-5xl text-burgundy">
