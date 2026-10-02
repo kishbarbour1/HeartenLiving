@@ -104,7 +104,7 @@ export default function Home() {
                   <h3 className="mt-5 font-slab font-700 text-xl text-burgundy">{s.title}</h3>
                   <p className="mt-2 text-sm text-foreground/65 leading-relaxed">{s.blurb}</p>
                   <ul className="mt-4 space-y-2">
-                    {s.points.slice(0, 3).map((p) => (
+                    {s.points.map((p) => (
                       <li key={p} className="flex items-start gap-2 text-sm text-foreground/75">
                         <CheckCircle2 className="w-4 h-4 text-gold-dark shrink-0 mt-0.5" /> {p}
                       </li>
