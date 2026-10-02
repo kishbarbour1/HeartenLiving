@@ -14,7 +14,20 @@ export default function Home() {
   return (
     <div>
       {/* HERO */}
-      <section className="relative overflow-hidden bg-gradient-to-b from-cream to-cream-deep">
+      <section className="relative overflow-hidden">
+        <img
+          src="https://media.base44.com/images/public/6abfa35db56b53d292ae7928/31d9e9ba0_CollaborativeStudyinaSunlitHome.png"
+          alt=""
+          className="absolute inset-0 h-full w-full object-cover object-center lg:object-right"
+        />
+        <div
+          className="absolute inset-0"
+          aria-hidden="true"
+          style={{
+            background:
+              "radial-gradient(ellipse 64% 68% at 50% 47%, rgba(251,246,236,0.93) 0%, rgba(251,246,236,0.87) 40%, rgba(251,246,236,0.68) 64%, rgba(251,246,236,0.40) 85%, rgba(251,246,236,0.28) 100%)",
+          }}
+        />
         <div
           className="absolute inset-0 opacity-[0.06] pointer-events-none"
           style={{ backgroundImage: "radial-gradient(#6E1423 1px, transparent 1px)", backgroundSize: "22px 22px" }}

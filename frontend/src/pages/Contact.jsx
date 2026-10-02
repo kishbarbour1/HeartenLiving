@@ -41,8 +41,23 @@ export default function Contact() {
 
   return (
     <div>
-      <section className="bg-gradient-to-b from-cream to-cream-deep">
-        <div className="max-w-7xl mx-auto px-5 sm:px-8 py-16 md:py-20 text-center">
+      <section className="relative overflow-hidden bg-cream">
+        <img
+          src="https://media.base44.com/images/public/6abfa35db56b53d292ae7928/4e9c78a5c_WelcomingModernCraftsmanEntryway.png"
+          alt=""
+          className="absolute inset-0 h-full w-full object-cover object-center"
+        />
+        <div className="absolute inset-0 bg-cream/60" aria-hidden="true" />
+        <div
+          className="absolute inset-0"
+          aria-hidden="true"
+          style={{
+            background:
+              "radial-gradient(ellipse 62% 76% at 50% 50%, rgba(251,246,236,0.55) 0%, rgba(251,246,236,0.38) 55%, rgba(251,246,236,0) 100%)",
+          }}
+        />
+        <div className="absolute inset-x-0 bottom-0 h-16 bg-gradient-to-b from-transparent to-cream" aria-hidden="true" />
+        <div className="relative max-w-7xl mx-auto px-5 sm:px-8 py-16 md:py-20 text-center">
           <p className="font-script text-3xl text-gold-dark animate-fade-up">{brand.scriptLine}</p>
           <h1 className="animate-fade-up delay-100 mt-1 font-slab font-900 text-4xl sm:text-5xl text-burgundy">
             Contact Us
