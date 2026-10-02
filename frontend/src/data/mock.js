@@ -32,7 +32,8 @@ export const services = [
     points: [
       "Fully furnished shared housing",
       "Safe, structured environment",
-      "24-hour support and supervision",
+      "Security monitoring for added safety.",
+      "Utilities & Wi-Fi included.",
     ],
   },
   {
