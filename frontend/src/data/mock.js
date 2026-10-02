@@ -42,10 +42,11 @@ export const services = [
     blurb: "Practical, everyday skills for confident independent living.",
     points: [
       "Budgeting",
-      "Meal preparation",
+      "Self-Advocacy",
       "Time management",
       "Communication",
       "Conflict resolution",
+      "Household Management",
     ],
   },
   {
@@ -62,7 +63,7 @@ export const services = [
   {
     icon: "HeartHandshake",
     title: "Wellness",
-    blurb: "Whole-person care through mentoring and connected resources.",
+    blurb: "Whole-person support through mentoring and connected resources.",
     points: [
       "Mentoring",
       "Community resources",
@@ -101,8 +102,8 @@ export const values = [
 ];
 
 export const donationTiers = [
-  { amount: 25, label: "Welcome Kit", desc: "Essentials for a resident's first week home." },
-  { amount: 75, label: "Life Skills Session", desc: "Fund a coaching session in budgeting or wellness." },
-  { amount: 150, label: "A Week of Housing", desc: "Support safe, furnished housing for one resident." },
-  { amount: 500, label: "Future Builder", desc: "Sponsor a month of full wraparound support." },
+  { amount: 25, label: "Welcome Home Essentials", desc: "Help provide toiletries, household essentials, and basic supplies." },
+  { amount: 75, label: "Life Skills Support", desc: "Help fund budgeting, employment readiness, and independent-living activities." },
+  { amount: 150, label: "Housing Stability Support", desc: "Help offset housing, utilities, and essential residential expenses." },
+  { amount: 500, label: "Future Builder", desc: "Make a meaningful contribution toward housing and comprehensive supportive services." },
 ];
