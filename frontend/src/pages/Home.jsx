@@ -150,7 +150,7 @@ export default function Home() {
               skills to build the independent life they deserve.
             </p>
             <div className="mt-6 grid grid-cols-3 gap-4 text-center">
-              {[["24hr", "Support"], ["18\u201324", "Ages Served"], ["100%", "Compassion"]].map(([n, l]) => (
+              {[["Safety Focused", ""], ["18\u201324", "Ages Served"], ["100%", "Compassion"]].map(([n, l]) => (
                 <div key={l} className="rounded-xl bg-cream/10 py-4">
                   <p className="font-slab font-800 text-2xl text-gold-light">{n}</p>
                   <p className="text-xs uppercase tracking-wide text-cream/70 mt-1">{l}</p>
