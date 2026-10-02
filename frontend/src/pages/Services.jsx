@@ -25,6 +25,11 @@ export default function Services() {
       </section>
 
       <section className="max-w-6xl mx-auto px-5 sm:px-8 py-16 space-y-8">
+        <img
+          src="https://media.base44.com/images/public/6abfa35db56b53d292ae7928/279983be7_WarmModernLivingRoomRetreat.png"
+          alt="Warm, comfortable residential living room at a Hearten home"
+          className="w-full rounded-3xl object-cover shadow-[0_12px_40px_-24px_rgba(110,20,35,0.4)]"
+        />
         {services.map((s, idx) => {
           const Icon = iconMap[s.icon];
           return (
