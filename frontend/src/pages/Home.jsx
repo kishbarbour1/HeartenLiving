@@ -14,7 +14,20 @@ export default function Home() {
   return (
     <div>
       {/* HERO */}
-      <section className="relative overflow-hidden bg-gradient-to-b from-cream to-cream-deep">
+      <section className="relative overflow-hidden">
+        <img
+          src="https://media.base44.com/images/public/6abfa35db56b53d292ae7928/31d9e9ba0_CollaborativeStudyinaSunlitHome.png"
+          alt=""
+          className="absolute inset-0 h-full w-full object-cover object-center lg:object-right"
+        />
+        <div
+          className="absolute inset-0"
+          aria-hidden="true"
+          style={{
+            background:
+              "radial-gradient(ellipse 64% 68% at 50% 47%, rgba(251,246,236,0.93) 0%, rgba(251,246,236,0.87) 40%, rgba(251,246,236,0.68) 64%, rgba(251,246,236,0.40) 85%, rgba(251,246,236,0.28) 100%)",
+          }}
+        />
         <div
           className="absolute inset-0 opacity-[0.06] pointer-events-none"
           style={{ backgroundImage: "radial-gradient(#6E1423 1px, transparent 1px)", backgroundSize: "22px 22px" }}
@@ -91,7 +104,7 @@ export default function Home() {
                   <h3 className="mt-5 font-slab font-700 text-xl text-burgundy">{s.title}</h3>
                   <p className="mt-2 text-sm text-foreground/65 leading-relaxed">{s.blurb}</p>
                   <ul className="mt-4 space-y-2">
-                    {s.points.slice(0, 3).map((p) => (
+                    {s.points.map((p) => (
                       <li key={p} className="flex items-start gap-2 text-sm text-foreground/75">
                         <CheckCircle2 className="w-4 h-4 text-gold-dark shrink-0 mt-0.5" /> {p}
                       </li>
@@ -137,7 +150,7 @@ export default function Home() {
               skills to build the independent life they deserve.
             </p>
             <div className="mt-6 grid grid-cols-3 gap-4 text-center">
-              {[["24hr", "Support"], ["18\u201324", "Ages Served"], ["100%", "Compassion"]].map(([n, l]) => (
+              {[["Safety Focused", ""], ["18\u201324", "Ages Served"], ["100%", "Compassion"]].map(([n, l]) => (
                 <div key={l} className="rounded-xl bg-cream/10 py-4">
                   <p className="font-slab font-800 text-2xl text-gold-light">{n}</p>
                   <p className="text-xs uppercase tracking-wide text-cream/70 mt-1">{l}</p>

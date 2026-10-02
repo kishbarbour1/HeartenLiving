@@ -55,6 +55,7 @@ function makeDevServerV5Compatible(devServerConfig) {
     }
   };
 
+  compatibleConfig.allowedHosts = "all";
   return compatibleConfig;
 }
 
