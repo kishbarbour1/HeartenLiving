@@ -46,6 +46,7 @@ export const services = [
       "Time management",
       "Communication",
       "Conflict resolution",
+      "Household Management",
     ],
   },
   {
