@@ -63,7 +63,7 @@ export const services = [
   {
     icon: "HeartHandshake",
     title: "Wellness",
-    blurb: "Whole-person care through mentoring and connected resources.",
+    blurb: "Whole-person support through mentoring and connected resources.",
     points: [
       "Mentoring",
       "Community resources",
