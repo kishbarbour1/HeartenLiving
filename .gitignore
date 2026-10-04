@@ -90,7 +90,3 @@ credentials.json
 *.key
 .credentials
 
-# Base44 preview/dev environment (sandbox only — not part of the project)
-/docker-compose.base44.yml
-/.base44/
-/AGENTS.md
