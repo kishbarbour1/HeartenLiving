@@ -2,5 +2,21 @@
   "previewPort": 3000,
   "healthPath": "/",
   "startCommand": "docker compose -f docker-compose.base44.yml up -d",
-  "secrets": []
+  "secrets": [
+    {
+      "name": "SMTP_USERNAME",
+      "description": "Google Workspace account used to authenticate SMTP sends (ksykes@heartenhome.org). Must match CONTACT_FROM_EMAIL or an alias on that account.",
+      "requiredAtBoot": false
+    },
+    {
+      "name": "SMTP_APP_PASSWORD",
+      "description": "Google Workspace App Password for SMTP_USERNAME (requires 2-Step Verification; generated at https://myaccount.google.com/apppasswords). Revocable — your Google password is never used.",
+      "requiredAtBoot": false
+    },
+    {
+      "name": "CONTACT_RETRY_TOKEN",
+      "description": "Shared secret required by POST /api/contact/retry to re-send notifications for inquiries whose email delivery failed. Any long random string.",
+      "requiredAtBoot": false
+    }
+  ]
 }

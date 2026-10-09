@@ -20,6 +20,10 @@ services:
     working_dir: /app/backend
     volumes:
       - ./backend:/app/backend
+    env_file:
+      # Non-secret defaults first; platform secrets LAST so they always win.
+      - ./env.base44.defaults
+      - /run/base44/app.env
     environment:
       MONGO_URL: mongodb://hearten:heartenpass@mongo:27017/hearten_db?authSource=admin
       DB_NAME: hearten_db
