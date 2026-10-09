@@ -2,5 +2,16 @@
   "previewPort": 3000,
   "healthPath": "/",
   "startCommand": "docker compose -f docker-compose.base44.yml up -d",
-  "secrets": []
+  "secrets": [
+    {
+      "name": "RESEND_API_KEY",
+      "description": "Resend API key used to email contact-form submissions to CONTACT_TO_EMAIL. Create at https://resend.com/api-keys after verifying the sending domain.",
+      "requiredAtBoot": false
+    },
+    {
+      "name": "CONTACT_RETRY_TOKEN",
+      "description": "Shared secret required by POST /api/contact/retry to re-send notifications for inquiries whose email delivery failed. Any long random string.",
+      "requiredAtBoot": false
+    }
+  ]
 }

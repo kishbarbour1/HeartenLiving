@@ -22,3 +22,10 @@ Frontend serves on host port 3000. Backend and MongoDB are internal-only.
 - Frontend: `fetch('http://localhost:3000')` via node
 - Backend: `python -c "urllib.request.urlopen('http://localhost:8000/api/')"`
 - MongoDB: `mongosh --eval "db.adminCommand('ping').ok"`
+
+## Contact form
+- The Contact page (`frontend/src/pages/Contact.jsx`) POSTs to `/api/contact`. In dev this is same-origin via CRA's `"proxy": "http://backend:8000"` in `frontend/package.json` (restart the frontend after editing it). For a production build, serve the API behind the same origin or set `REACT_APP_API_URL`.
+- `POST /api/contact` (backend `server.py`) validates input, applies a honeypot (`website`) + in-memory per-IP rate limit, saves to the `contact_messages` collection FIRST, then emails via Resend (`backend/notifications.py`). Response: `{ ok, id, email_status, email_error }`; `email_status` is `sent` or `failed`. The inquiry is preserved even when email fails.
+- `POST /api/contact/retry` re-sends notifications for `email_status: "failed"` records; requires header `X-Retry-Token` matching `CONTACT_RETRY_TOKEN`.
+- Email config comes from `env.base44.defaults` (non-secret: `CONTACT_TO_EMAIL`, `CONTACT_FROM_EMAIL`) and platform secrets `/run/base44/app.env` (`RESEND_API_KEY`, `CONTACT_RETRY_TOKEN`). No API key is ever committed.
+- Verify: `curl -X POST http://localhost:3000/api/contact -H 'Content-Type: application/json' -d '{"name":"T","email":"t@example.com","message":"hi"}'` → `email_status: "failed"` with `RESEND_API_KEY is not configured` until a real key is set. Mongo persistence: restart the `mongo` service and confirm `db.contact_messages.countDocuments({})` is unchanged (named volume `mongo_data`).

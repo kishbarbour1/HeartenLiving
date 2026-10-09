@@ -17,26 +17,55 @@ const cards = [
   { icon: MapPin, label: "Location", value: contact.address, href: null },
 ];
 
+const API_BASE = process.env.REACT_APP_API_URL || "";
+
+const emptyForm = { name: "", email: "", phone: "", interest: "", message: "", website: "" };
+
 export default function Contact() {
   const { toast } = useToast();
-  const [form, setForm] = useState({ name: "", email: "", phone: "", interest: "", message: "" });
+  const [form, setForm] = useState(emptyForm);
   const [submitted, setSubmitted] = useState(false);
+  const [sending, setSending] = useState(false);
 
   const update = (k) => (e) => setForm((f) => ({ ...f, [k]: e.target ? e.target.value : e }));
 
-  const onSubmit = (e) => {
+  const onSubmit = async (e) => {
     e.preventDefault();
     if (!form.name || !form.email || !form.message) {
       toast({ title: "Please complete the form", description: "Name, email and a short message are required." });
       return;
     }
-    // FRONTEND-ONLY: persist to browser localStorage as a mock submission
-    const existing = JSON.parse(localStorage.getItem("hearten_inquiries") || "[]");
-    existing.push({ ...form, ts: new Date().toISOString() });
-    localStorage.setItem("hearten_inquiries", JSON.stringify(existing));
-    setSubmitted(true);
-    toast({ title: "Message received!", description: "Thank you — our team will reach out soon." });
-    setForm({ name: "", email: "", phone: "", interest: "", message: "" });
+    setSending(true);
+    try {
+      const res = await fetch(`${API_BASE}/api/contact`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(form),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        toast({
+          title: "Message not sent",
+          description: data.detail || "Something went wrong. Please try again.",
+        });
+        return;
+      }
+      // Success is shown only after the inquiry has been saved on the server.
+      setSubmitted(true);
+      if (data.email_status === "failed") {
+        toast({
+          title: "Message saved",
+          description: "We received your message, but our email notification failed. Our team can still see it.",
+        });
+      } else {
+        toast({ title: "Message received!", description: "Thank you — our team will reach out soon." });
+      }
+      setForm(emptyForm);
+    } catch (err) {
+      toast({ title: "Message not sent", description: "We couldn't reach our server. Please try again." });
+    } finally {
+      setSending(false);
+    }
   };
 
   return (
@@ -150,7 +179,17 @@ export default function Contact() {
                   <Label htmlFor="message" className="text-foreground/80">Message *</Label>
                   <Textarea id="message" value={form.message} onChange={update("message")} rows={5} placeholder="How can we help?" className="mt-1.5 bg-cream/60 border-gold/30 focus-visible:ring-gold resize-none" />
                 </div>
-                <Button type="submit" size="lg" className="mt-6 w-full bg-burgundy hover:bg-burgundy-light text-cream font-semibold rounded-full h-12">
+                <input
+                  type="text"
+                  name="website"
+                  value={form.website}
+                  onChange={update("website")}
+                  tabIndex={-1}
+                  autoComplete="off"
+                  aria-hidden="true"
+                  className="hidden"
+                />
+                <Button type="submit" size="lg" disabled={sending} className="mt-6 w-full bg-burgundy hover:bg-burgundy-light text-cream font-semibold rounded-full h-12">
                   Send Message <Send className="w-4 h-4 ml-2" />
                 </Button>
               </form>

@@ -20,6 +20,10 @@ services:
     working_dir: /app/backend
     volumes:
       - ./backend:/app/backend
+    env_file:
+      # Non-secret defaults first; platform secrets LAST so they always win.
+      - ./env.base44.defaults
+      - /run/base44/app.env
     environment:
       MONGO_URL: mongodb://hearten:heartenpass@mongo:27017/hearten_db?authSource=admin
       DB_NAME: hearten_db
@@ -27,7 +31,7 @@ services:
     depends_on:
       mongo:
         condition: service_healthy
-    command: ["sh", "-ec", "pip install --no-cache-dir fastapi==0.110.1 'uvicorn[standard]==0.25.0' 'python-dotenv>=1.0.1' 'pymongo==4.6.3' 'pydantic>=2.6.4' 'motor==3.3.1' && exec uvicorn server:app --host 0.0.0.0 --port 8000 --reload"]
+    command: ["sh", "-ec", "pip install --no-cache-dir fastapi==0.110.1 'uvicorn[standard]==0.25.0' 'python-dotenv>=1.0.1' 'pymongo==4.6.3' 'pydantic>=2.6.4' 'motor==3.3.1' 'httpx>=0.27.0' && exec uvicorn server:app --host 0.0.0.0 --port 8000 --reload"]
     healthcheck:
       test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/api/')"]
       interval: 15s
