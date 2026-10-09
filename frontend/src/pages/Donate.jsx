@@ -69,9 +69,9 @@ export default function Donate() {
                   A Registered 501(c)(3) Nonprofit
                 </h3>
                 <p className="mt-2 text-sm text-foreground/70">
-                  Hearten Transitional Living Inc. is a registered 501(c)(3) nonprofit
-                  organization. Your donation is tax-deductible to the extent allowed by law and
-                  directly supports youth housing, mentorship, and life-skills programs.
+                  Hearten Horizons is a registered 501(c)(3) nonprofit organization. Donations
+                  are made directly to Hearten Horizons through Zeffy and are tax-deductible to
+                  the extent allowed by law.
                 </p>
               </div>
             </div>
