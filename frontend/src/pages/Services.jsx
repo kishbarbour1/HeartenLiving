@@ -30,7 +30,7 @@ export default function Services() {
         <div className="relative max-w-7xl mx-auto px-5 sm:px-8 py-20 md:py-28 text-center">
           <p className="font-script text-3xl text-gold-dark animate-fade-up">Our Services &amp; Support</p>
           <h1 className="animate-fade-up delay-100 mt-1 font-slab font-900 text-4xl sm:text-5xl text-burgundy">
-            Complete, Compassionate Care
+            Support for Independent Living
           </h1>
           <p className="animate-fade-up delay-200 mt-5 max-w-2xl mx-auto text-lg text-foreground/70">
             From a furnished home to life skills, career development, and wellness — every service

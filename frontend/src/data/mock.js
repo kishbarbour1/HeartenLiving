@@ -15,7 +15,7 @@ export const contact = {
   email: "info@heartenhome.org",
   website: "heartenhome.org",
   websiteHref: "https://heartenhome.org",
-  address: "Spring, Texas 77379",
+  address: "Spring, Texas",
 };
 
 export const mission =
