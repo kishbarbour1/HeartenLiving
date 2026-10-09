@@ -53,11 +53,6 @@ export default function Donate() {
               <div className="mt-5 overflow-hidden rounded-2xl border border-burgundy/25 bg-cream/40">
                 <ZeffyDonateEmbed />
               </div>
-
-              <p className="mt-4 text-center text-xs text-foreground/50 flex items-center justify-center gap-1.5">
-                <Lock className="w-3.5 h-3.5 text-gold-dark" /> Preview only — the live Zeffy
-                donation form is pending verification. Please do not submit real donations yet.
-              </p>
             </div>
           </div>
         </div>
