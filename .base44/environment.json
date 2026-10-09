@@ -5,7 +5,7 @@
   "secrets": [
     {
       "name": "SMTP_USERNAME",
-      "description": "Google Workspace account used to authenticate SMTP sends (ksykes@heartenhome.org). Must match CONTACT_FROM_EMAIL or an alias on that account.",
+      "description": "Google Workspace account used to authenticate the SMTP fallback (ksykes@heartenhome.org). Only needed if the Base44 SendEmail integration is unavailable; must match CONTACT_FROM_EMAIL or an alias.",
       "requiredAtBoot": false
     },
     {

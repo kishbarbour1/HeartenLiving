@@ -17,7 +17,10 @@ const cards = [
   { icon: MapPin, label: "Location", value: contact.address, href: null },
 ];
 
-const API_BASE = process.env.REACT_APP_API_URL || "";
+// Production: set REACT_APP_CONTACT_ENDPOINT to the deployed Base44 function URL
+// (e.g. https://<your-app-domain>/functions/contact). Dev falls back to the
+// same-origin /api/contact route proxied to the local Deno dev server.
+const CONTACT_ENDPOINT = process.env.REACT_APP_CONTACT_ENDPOINT || "/api/contact";
 
 const emptyForm = { name: "", email: "", phone: "", interest: "", message: "", website: "" };
 
@@ -37,7 +40,7 @@ export default function Contact() {
     }
     setSending(true);
     try {
-      const res = await fetch(`${API_BASE}/api/contact`, {
+      const res = await fetch(CONTACT_ENDPOINT, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(form),

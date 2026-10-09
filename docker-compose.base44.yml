@@ -1,27 +1,27 @@
 services:
-  # ── Contact-form API (Node.js serverless function, dev server) ──────────
-  # In production this is deployed as a Base44 Function — see DEPLOYMENT.md.
-  # The dev server here lets the frontend's CRA proxy reach /api/contact.
+  # ── Contact-form API (Deno — matches the Base44 function runtime) ────────
+  # Production deploys `base44/functions/contact/` as a Base44 Function.
+  # Locally, `base44/dev-server.ts` runs the SAME handler on Deno so behaviour
+  # matches production. The frontend's CRA proxy reaches /api/contact here.
   api:
-    image: node:22-slim
+    image: denoland/deno:latest
     restart: on-failure
-    working_dir: /app/functions
+    working_dir: /app
     volumes:
-      - ./functions:/app/functions
+      - ./base44:/app/base44
     env_file:
       # Non-secret defaults first; platform secrets LAST so they always win.
       - ./env.base44.defaults
       - /run/base44/app.env
     environment:
       PORT: "8000"
-      CORS_ORIGINS: "*"
-    command: ["sh", "-ec", "npm install --omit=dev && exec npm run dev"]
+    command: ["run", "--allow-net", "--allow-env", "--allow-read", "base44/dev-server.ts"]
     healthcheck:
-      test: ["CMD", "node", "-e", "fetch('http://localhost:8000/api').then(r=>r.ok?process.exit(0):process.exit(1)).catch(()=>process.exit(1))"]
+      test: ["CMD", "deno", "eval", "--allow-net", "const r = await fetch('http://localhost:8000/api'); Deno.exit(r.ok ? 0 : 1)"]
       interval: 15s
-      timeout: 5s
+      timeout: 10s
       retries: 5
-      start_period: 30s
+      start_period: 60s
 
   # ── Frontend (React + CRACO dev server) ─────────────────────────────────
   frontend:

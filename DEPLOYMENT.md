@@ -1,7 +1,7 @@
 # Hearten Transitional Living — Production Deployment Guide
 
-This guide covers deploying the Hearten Living website as a static site with a
-serverless contact-form function, using your Base44 Builder plan.
+Deploy the Hearten Living website as a static site with a **Deno** backend
+function for the contact form, using your Base44 Builder plan.
 
 ---
 
@@ -10,144 +10,118 @@ serverless contact-form function, using your Base44 Builder plan.
 | Layer | Technology | Output |
 |-------|-----------|--------|
 | **Frontend** | React 19 + CRACO + Tailwind CSS | `frontend/build/` (static files) |
-| **Contact API** | Node.js serverless function | Base44 Function |
-| **Email** | Google Workspace SMTP | Notification to `info@heartenhome.org` |
+| **Contact API** | **Deno** backend function (`base44/functions/contact/`) | Base44 Function |
+| **Email** | Base44 **SendEmail** integration (fallback: Google Workspace SMTP) | Notification to `info@heartenhome.org` |
+| **Data** | Base44 `ContactMessage` entity | Inquiry records |
 | **Donations** | Zeffy iframe embed | No backend needed |
 
-The FastAPI/MongoDB backend has been replaced by a single serverless function
-(`functions/contact.js`) that validates input, applies spam protection, and
-sends an email notification. No database is required.
+The former FastAPI/MongoDB backend is gone. The contact form is a single
+**Deno/TypeScript** function — the runtime Base44 uses for backend functions.
 
 ---
 
-## 1. Configure Environment Variables
+## 1. Create the Base44 Function
 
-### 1a. Frontend — API endpoint
+Base44 backend functions run on **Deno**. The function lives in
+`base44/functions/contact/` (`entry.ts` + `core.ts`).
 
-Create `frontend/.env.production` (not committed — add to `.gitignore` if needed):
-
-```
-REACT_APP_API_URL=https://YOUR_FUNCTION_URL
-```
-
-Set `REACT_APP_API_URL` to the base URL of your deployed Base44 Function
-(see step 3). The contact form POSTs to `${REACT_APP_API_URL}/api/contact`.
-
-In development this variable is unset — the CRA dev server proxies
-`/api/*` to the local function server automatically.
-
-### 1b. API function — SMTP credentials
-
-These secrets are already configured in your Base44 dashboard:
-
-| Secret | Description |
-|--------|-------------|
-| `SMTP_USERNAME` | Google Workspace account (ksykes@heartenhome.org) |
-| `SMTP_APP_PASSWORD` | Google Workspace App Password |
-
-Non-secret defaults (in `env.base44.defaults`):
-
-| Variable | Default |
-|----------|---------|
-| `CONTACT_TO_EMAIL` | `info@heartenhome.org` |
-| `CONTACT_FROM_EMAIL` | `ksykes@heartenhome.org` |
-| `SMTP_HOST` | `smtp.gmail.com` |
-| `SMTP_PORT` | `587` |
-
-When deploying the function to Base44, set these same environment variables
-in the function's configuration.
-
----
-
-## 2. Build the Frontend
+### Option A — Base44 CLI
 
 ```bash
-cd frontend
-yarn install          # if node_modules not present
-yarn build            # outputs to frontend/build/
+base44 functions deploy contact
 ```
 
-The production build is a static site in `frontend/build/`. It includes:
+### Option B — Dashboard
 
-- All five pages (Home, Services, About, Contact, Donate)
-- Hearten branding (burgundy/gold/cream palette, Logo, fonts)
-- Zeffy donation iframe embed
-- SPA routing support (`public/_redirects` → `/* /index.html 200`)
-- Honeypot spam protection on the contact form
+1. Open **Dashboard → Code → Functions** and create a function named `contact`.
+2. Paste `entry.ts` and `core.ts` (keep them in the same directory so the
+   relative import resolves).
 
-### Verify the build
+The function is public (no login required) — call it via HTTP:
 
-```bash
-ls -la frontend/build/          # confirm index.html, static/, etc.
-npx serve frontend/build        # preview locally on http://localhost:3000
+```
+POST https://<your-app-domain>/functions/contact
 ```
 
 ---
 
-## 3. Deploy the Contact-Form Function
+## 2. Email Delivery
 
-### Option A — Base44 Function (recommended)
+The function sends notifications to `info@heartenhome.org` in two stages:
 
-1. In the Base44 builder, create a new Function named `contact`.
-2. Paste the contents of `functions/contact.js` into the function editor.
-3. Add `nodemailer` to the function's dependencies (or use Base44's built-in
-   email action if available).
-4. Set environment variables:
-   - `SMTP_USERNAME` — your Google Workspace account
-   - `SMTP_APP_PASSWORD` — your app password
-   - `CONTACT_TO_EMAIL` — `info@heartenhome.org`
-   - `CONTACT_FROM_EMAIL` — `ksykes@heartenhome.org`
-   - `SMTP_HOST` — `smtp.gmail.com`
-   - `SMTP_PORT` — `587`
-5. Deploy the function and note its URL.
-6. Set `REACT_APP_API_URL` in `frontend/.env.production` to the function's
-   base URL, then rebuild.
+1. **Base44 SendEmail integration** (primary — the platform-supported email API).
+   No credentials needed. **Note:** to email an address that has not signed up
+   as a user of your app, Base44 requires a **paid plan (Builder+) and a verified
+   custom domain**. Verify `heartenhome.org` in your Base44 app settings.
+2. **Google Workspace SMTP fallback** — used automatically if SendEmail is
+   unavailable. Requires the `SMTP_USERNAME` and `SMTP_APP_PASSWORD` secrets
+   (already configured in this app) and these non-secret defaults
+   (`env.base44.defaults`):
 
-### Option B — Other serverless platforms (Vercel, Netlify, etc.)
+   | Variable | Default |
+   |----------|---------|
+   | `CONTACT_TO_EMAIL` | `info@heartenhome.org` |
+   | `CONTACT_FROM_EMAIL` | `ksykes@heartenhome.org` |
+   | `SMTP_HOST` | `smtp.gmail.com` |
+   | `SMTP_PORT` | `587` |
 
-The function in `functions/contact.js` is a standard Vercel/Netlify-style
-handler (`(req, res) => { ... }`). Deploy it to your platform of choice and
-set the same environment variables.
+   Set these in the function's environment variables in the Base44 dashboard.
+   `CONTACT_FROM_EMAIL` must match the authenticated Google account (or an alias).
 
-### Optional — Persist submissions with a Base44 Entity
+> If your plan cannot verify a custom domain and SMTP egress is blocked on the
+> Base44 runtime, tell us — the delivery path can be switched to a Gmail API
+> connector over HTTPS.
 
-To store every inquiry (not just email it), create a "ContactMessage" entity
-in the Base44 builder with this schema:
+---
+
+## 3. Create the `ContactMessage` Entity (optional but recommended)
+
+Create a **`ContactMessage`** entity in the Base44 builder so every inquiry is
+stored (and never lost if email fails). Schema:
 
 | Field | Type | Notes |
 |-------|------|-------|
-| `id` | Text | UUID, primary key |
+| `id` | Text | UUID (primary key) |
 | `name` | Text | Required |
 | `email` | Text | Required |
 | `phone` | Text | Optional |
 | `interest` | Text | Optional |
 | `message` | Text (long) | Required |
-| `created_at` | DateTime | Auto |
-| `email_status` | Text | `sent` / `failed` |
+| `created_at` | DateTime | ISO timestamp |
+| `email_status` | Text | `pending` / `sent` / `failed` |
+| `email_error` | Text | Optional |
 
-Then uncomment the entity-write block in `functions/contact.js` (search for
-`entities.ContactMessage.create`).
+The function already writes to it via `base44.asServiceRole.entities.ContactMessage`.
+If the entity does not exist yet, the write is skipped and email still delivers.
 
 ---
 
-## 4. Deploy the Static Site
-
-### Base44 CLI static hosting
+## 4. Build & Deploy the Frontend
 
 ```bash
-# Build the production bundle
-cd frontend && yarn build
-
-# Deploy the static build (build output: frontend/build)
-# Use the Base44 CLI to upload frontend/build/ as a static site.
-# The _redirects file ensures SPA routing works (all paths → index.html).
+cd frontend
+yarn install
+REACT_APP_CONTACT_ENDPOINT=https://<your-app-domain>/functions/contact yarn build
 ```
 
-### Alternative — any static host (Netlify, Vercel, Cloudflare Pages, S3, etc.)
+Or set `REACT_APP_CONTACT_ENDPOINT` in `frontend/.env.production` (not committed):
 
-Point the host's build command to `cd frontend && yarn build` and the output
-directory to `frontend/build`. The included `public/_redirects` file handles
-SPA routing on Netlify; for other hosts, add an equivalent rewrite rule:
+```
+REACT_APP_CONTACT_ENDPOINT=https://<your-app-domain>/functions/contact
+```
+
+Then `yarn build` → static site in `frontend/build/`. It includes:
+
+- All five pages (Home, Services, About, Contact, Donate)
+- Hearten branding (burgundy/gold/cream palette, Logo, fonts) — unchanged
+- Zeffy donation iframe embed — unchanged
+- SPA routing support (`public/_redirects` → `/* /index.html 200`)
+
+### Static hosting
+
+Upload `frontend/build/` to Base44 static hosting (or any static host). The
+included `public/_redirects` handles SPA routing on Netlify; for other hosts add
+an equivalent rewrite:
 
 **Vercel** (`vercel.json`):
 ```json
@@ -163,11 +137,12 @@ location / { try_files $uri $uri/ /index.html; }
 
 ## 5. Post-Deployment Checklist
 
-- [ ] All five pages load correctly (/, /services, /about, /contact, /donate)
+- [ ] All five pages load (/, /services, /about, /contact, /donate)
 - [ ] Zeffy donation form renders on /donate
-- [ ] Contact form submits successfully and email arrives at info@heartenhome.org
-- [ ] Honeypot field rejects bot submissions (fill the hidden "website" field → 400)
+- [ ] Contact form submits and email arrives at info@heartenhome.org
+- [ ] Honeypot rejects bot submissions (fill hidden "website" field → 400)
 - [ ] Rate limiting works (>5 submissions in 10 min → 429)
+- [ ] `ContactMessage` records appear in the entity after submissions
 - [ ] SPA routing works (navigate to /about and refresh → page loads, not 404)
 - [ ] Branding intact (burgundy/gold/cream palette, Logo, fonts)
 
@@ -175,27 +150,53 @@ location / { try_files $uri $uri/ /index.html; }
 
 ## Spam Protection
 
-The contact form includes three layers of spam protection:
-
-1. **Honeypot** — A hidden `website` field that real users never see. If
-   filled, the submission is silently rejected (HTTP 400).
-2. **Rate limiting** — Max 5 submissions per IP within 10 minutes (HTTP 429).
-3. **Server-side validation** — Name, email, and message are validated
-   server-side. Email format is checked with a regex.
+1. **Honeypot** — hidden `website` field; if filled → HTTP 400.
+2. **Rate limiting** — max 5 submissions per IP per 10 minutes → HTTP 429.
+3. **Server-side validation** — name, email, message required; email regex checked.
 
 ---
 
-## What Was Removed
+## Local Development
 
-- **FastAPI backend** (`backend/server.py`) — replaced by `functions/contact.js`
-- **MongoDB** — no longer needed; the function delivers inquiries by email
-- **Python dependencies** — no longer needed
-- **emergent.sh / PostHog scripts** — removed from `index.html` for production
+The dev stack runs the **same Deno handler** as production:
+
+```bash
+docker compose -f docker-compose.base44.yml up -d
+# api service: deno run base44/dev-server.ts  (port 8000)
+# frontend:    CRA dev server                  (port 3000, proxies /api → api:8000)
+```
+
+Verify the Deno function locally:
+
+```bash
+# type-check (TypeScript + npm: imports resolve on Deno)
+docker compose -f docker-compose.base44.yml exec -T api \
+  deno check base44/functions/contact/entry.ts
+
+# end-to-end (uses the SMTP fallback locally)
+curl -X POST http://localhost:3000/api/contact \
+  -H 'Content-Type: application/json' \
+  -d '{"name":"T","email":"t@example.com","message":"hi"}'
+# → {"ok":true,"email_status":"sent",...}
+```
+
+---
+
+## Builder-Side Steps (require your Base44 account — cannot be done from the repo)
+
+1. **Deploy the function** — `base44 functions deploy contact` or paste `entry.ts` + `core.ts` into Dashboard → Code → Functions.
+2. **Verify the `heartenhome.org` custom domain** in app settings so SendEmail can reach `info@heartenhome.org` (or rely on the SMTP fallback).
+3. **Create the `ContactMessage` entity** (schema above).
+4. **Set function env vars** — `CONTACT_TO_EMAIL`, `CONTACT_FROM_EMAIL`, `SMTP_HOST`, `SMTP_PORT` (and confirm the `SMTP_USERNAME` / `SMTP_APP_PASSWORD` secrets are present).
+5. **Build the frontend** with `REACT_APP_CONTACT_ENDPOINT` set to the deployed function URL.
+6. **Configure static hosting** for `frontend/build/` and publish.
+7. **DNS cutover** — not done, per your instruction.
+
+---
 
 ## What Was Preserved
 
 - All five pages (Home, Services, About, Contact, Donate) — unchanged
 - Hearten branding (colors, fonts, logo, copy) — unchanged
 - Zeffy donation iframe embed — unchanged
-- SMTP email notifications to info@heartenhome.org — same Gmail credentials
-- Honeypot + rate-limiting spam protection — same logic, ported to Node.js
+- Honeypot + rate-limiting spam protection — same logic, ported to Deno
