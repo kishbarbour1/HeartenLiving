@@ -74,7 +74,7 @@ export const services = [
 ];
 
 export const whoWeServe = {
-  headline: "Young adults ages 18\u201324 who are:",
+  headline: "Supporting Young Adults Ages 18\u201324",
   points: [
     "Aging out of foster care",
     "Experiencing housing instability",
